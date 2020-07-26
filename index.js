@@ -5,6 +5,7 @@ const port = 8081
 const bodyParser = require('body-parser')
 const connection = require('./database/database')
 const ask = require('./database/Ask')
+const answer = require('./database/Answer')
 
 connection.authenticate()
 .then(() => {
@@ -21,7 +22,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
-    ask.findAll({ raw: true})
+    ask.findAll({ raw: true, order:[['id','DESC']]})
     .then(asks => {
         res.render('index', {
             asks: asks
@@ -46,6 +47,44 @@ app.post('/saveask', (req, res) => {
     })
     .catch((err) => {
         console.log("Ocorreu um erro: " + err)
+    })
+})
+
+app.get('/asked/:id', (req, res) => {
+    var id = req.params.id
+    ask.findOne({
+        where: {id: id}
+    })
+    .then(thisask => {
+        if(thisask != undefined){
+
+            answer.findAll({
+                where: {askid: thisask.id},
+                order: [['id', 'desc']]
+            })
+            .then(answers => {
+                res.render('asks', {
+                    thisask: thisask,
+                    answers: answers
+                })
+            })
+
+        }else{
+            res.redirect('/')
+        }
+    })
+})
+
+app.post('/answer', (req, res) => {
+    var body = req.body.body
+    var askid = req.body.askid
+
+    answer.create({
+        body: body,
+        askid: askid
+    })
+    .then(() => {
+        res.redirect('/asked/' + askid)
     })
 })
 
