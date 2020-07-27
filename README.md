@@ -1,5 +1,6 @@
 # NodeAsk
-Este repositório contém um sistema web de perguntas e respostas ao estilo Yahoo Respostas. Desenvolvido em NodeJS e MySQL
+NodeAsk is a questions and answers web app. You can create a question and answer 
+anonymously.
 
 # Status
-Projeto em Finalizado.
+Finished. Will be online soon.
